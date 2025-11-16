@@ -22,8 +22,8 @@
 <div class="factory-info">ঠিকানা: আশুলিয়া, চারাবাগ, সাভার, ঢাকা</div>
 
 <div class="picker">
-  <label>তারিখ নির্বাচন করুন: </label>
-  <input type="date" id="selectedDate">
+  <label>তারিখ নির্বাচন করুন (নভেম্বর ২০২৫): </label>
+  <input type="date" id="selectedDate" min="2025-11-01" max="2025-11-30">
   <button onclick="showShifts()">OK</button>
 </div>
 
@@ -86,23 +86,20 @@ const employees = [
   {name:"মোঃ এনামুল হক", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
   {name:"মোঃ আজাদ", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
   {name:"আব্দুল কাদের", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
-  {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]},
+  {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
   {name:"মোঃ মনিরুল ইসলাম", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
-  {name:"মিঃ ডন খুঁম বম", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]}
+  {name:"মিঃ ডন খুঁম বম", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]}
 ];
 
-// তারিখ নির্বাচন অনুযায়ী শিফট দেখানো
+// শিফট দেখানোর ফাংশন
 function showShifts() {
   const dateInput = document.getElementById("selectedDate").value;
   if(!dateInput) { alert("একটি তারিখ নির্বাচন করুন"); return; }
 
-  const day = new Date(dateInput).getDate(); // ১-৩০ ধরে নেওয়া
-  const shiftA = document.getElementById("shiftA");
-  const shiftB = document.getElementById("shiftB");
-  const shiftOFF = document.getElementById("shiftOFF");
+  const selected = new Date(dateInput);
+  const month = selected.getMonth() + 1; // 0-11
+  const year = selected.getFullYear();
+  const day = selected.getDate();
 
-  shiftA.innerHTML = "";
-  shiftB.innerHTML = "";
-  shiftOFF.innerHTML = "";
-
-  employees.forEach
+  if(month !== 11 || year !== 2025) {
+    alert("শিফট তথ্য শুধ

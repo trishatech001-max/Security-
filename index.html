@@ -5,72 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Metro Knitting & Dyeing Mills Factory 2</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin:0;
-        padding:0;
-        background:#f2f2f2;
-    }
-    .login-container, .main-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        flex-direction: column;
-    }
-    .login-box {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    input[type="password"], input[type="date"] {
-        padding: 10px;
-        margin: 10px 0;
-        font-size: 16px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-    }
-    button {
-        padding: 10px 20px;
-        font-size:16px;
-        border:none;
-        border-radius:6px;
-        background:green;
-        color:white;
-        cursor:pointer;
-    }
-    h1, h2 {
-        text-align:center;
-        color:green;
-    }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 20px;
-    }
-    th, td {
-        border:1px solid #ccc;
-        padding:8px;
-        text-align:center;
-        font-size:14px;
-    }
-    th {
-        background: #e6ffe6;
-    }
-    .highlight {
-        background: yellow;
-        font-weight: bold;
-    }
-    .date-container {
-        margin-top:20px;
-        text-align:center;
-    }
+body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background:#f2f2f2;
+}
+.login-container, .main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+input[type="password"], input[type="date"] {
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+button {
+    padding: 10px 20px;
+    font-size:16px;
+    border:none;
+    border-radius:6px;
+    background:green;
+    color:white;
+    cursor:pointer;
+}
+h1, h2 {
+    text-align:center;
+    color:green;
+}
+.date-container {
+    margin-top:20px;
+    text-align:center;
+}
+.shift-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top:20px;
+}
+.shift-table th, .shift-table td {
+    border:1px solid #ccc;
+    padding:6px;
+    text-align:center;
+    font-size:14px;
+}
+.shift-table th {
+    background:#e6ffe6;
+}
+.highlight {
+    background: yellow;
+    font-weight:bold;
+}
 </style>
 </head>
 <body>
 
+<!-- লগইন পেজ -->
 <div class="login-container" id="loginDiv">
     <div class="login-box">
         <h2>পাসওয়ার্ড দিন</h2>
@@ -80,6 +81,7 @@
     </div>
 </div>
 
+<!-- হোমপেজ -->
 <div class="main-container" id="mainDiv" style="display:none;">
     <h1>মেট্রো নিটিং এন্ড ডাইং মিলস ফ্যাক্টরি ২</h1>
     <h2>আশুলিয়া, চারাবাগ, সাভার, ঢাকা</h2>
@@ -89,20 +91,20 @@
         <button onclick="highlightShift()">OK</button>
     </div>
 
-    <table id="shiftTable">
+    <table class="shift-table" id="shiftTable">
         <thead>
             <tr>
-                <th>Name</th>
-                <!-- ১–৩০ -->
+                <th>ক্রমিক</th>
+                <th>Employee Name</th>
+                <!-- 22 দিনের ঘর -->
                 <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
                 <th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th>
                 <th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th>
-                <th>19</th><th>20</th><th>21</th><th>22</th><th>23</th><th>24</th>
-                <th>25</th><th>26</th><th>27</th><th>28</th><th>29</th><th>30</th>
+                <th>19</th><th>20</th><th>21</th><th>22</th>
             </tr>
         </thead>
         <tbody id="tableBody">
-            <!-- Table rows dynamically added by JS -->
+            <!-- JS দিয়ে রো ভরানো হবে -->
         </tbody>
     </table>
 </div>
@@ -110,12 +112,13 @@
 <script>
 const password = "2025";
 
+// উদাহরণ: 5 জন এমপ্লয়ি, তোমার পুরো লিস্ট এখানে বসাবে
 const employees = [
-    {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-    {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-    {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-    {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-    // এখানে তোমার বাকি এমপ্লয়িদের তালিকা এমনভাবে বসাতে হবে
+    {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ মোস্তফা", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]}
 ];
 
 function checkPassword(){
@@ -131,16 +134,22 @@ function checkPassword(){
 
 function populateTable(){
     const tbody = document.getElementById("tableBody");
-    employees.forEach(emp=>{
+    employees.forEach((emp,index)=>{
         const tr = document.createElement("tr");
+        const snTd = document.createElement("td");
+        snTd.textContent = index+1;
+        tr.appendChild(snTd);
+
         const nameTd = document.createElement("td");
         nameTd.textContent = emp.name;
         tr.appendChild(nameTd);
+
         emp.shifts.forEach(shift=>{
             const td = document.createElement("td");
             td.textContent = shift;
             tr.appendChild(td);
         });
+
         tbody.appendChild(tr);
     });
 }
@@ -151,11 +160,11 @@ function highlightShift(){
     const day = new Date(dateInput).getDate(); // 1-31
     const tbody = document.getElementById("tableBody");
     for(let tr of tbody.rows){
-        for(let i=1; i<=30; i++){
+        for(let i=2; i<=23; i++){ // 22 দিন
             tr.cells[i].classList.remove("highlight");
         }
-        if(day<=30){
-            tr.cells[day].classList.add("highlight");
+        if(day>=1 && day<=22){
+            tr.cells[day+1].classList.add("highlight");
         }
     }
 }

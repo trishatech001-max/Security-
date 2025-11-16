@@ -3,172 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Metro Knitting & Dyeing Mills Factory 2</title>
+<title>শিফট ও ছুটি টেবিল</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    margin:0;
-    padding:0;
-    background:#f2f2f2;
-}
-.login-container, .main-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    min-height: 100vh;
-}
-.login-box {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
-input[type="password"], input[type="date"] {
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-button {
-    padding: 10px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:6px;
-    background:green;
-    color:white;
-    cursor:pointer;
-}
-h1, h2 {
-    text-align:center;
-    color:green;
-}
-.date-container {
-    margin-top:20px;
-    text-align:center;
-}
-.shift-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top:20px;
-}
-.shift-table th, .shift-table td {
-    border:1px solid #ccc;
-    padding:6px;
-    text-align:center;
-    font-size:14px;
-}
-.shift-table th {
-    background:#e6ffe6;
-}
-.highlight {
-    background: yellow;
-    font-weight:bold;
-}
+  body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
+  .login-container, .home-container { display: none; padding: 20px; }
+  .login-container.active, .home-container.active { display: block; }
+  h1 { color: green; text-align: center; }
+  .factory-info { text-align: center; margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; font-size: 12px; }
+  th { background: #eee; }
+  input[type=date] { padding: 5px; }
+  button { padding: 5px 10px; }
+  .summary { margin-top: 20px; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<!-- লগইন পেজ -->
-<div class="login-container" id="loginDiv">
-    <div class="login-box">
-        <h2>পাসওয়ার্ড দিন</h2>
-        <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড">
-        <br>
-        <button onclick="checkPassword()">লগইন</button>
-    </div>
+<!-- Login Page -->
+<div class="login-container active" id="loginPage">
+  <h1>লগইন</h1>
+  <label>পাসওয়ার্ড: </label>
+  <input type="password" id="passwordInput">
+  <button onclick="login()">Login</button>
+  <p id="loginError" style="color:red;"></p>
 </div>
 
-<!-- হোমপেজ -->
-<div class="main-container" id="mainDiv" style="display:none;">
-    <h1>মেট্রো নিটিং এন্ড ডাইং মিলস ফ্যাক্টরি ২</h1>
-    <h2>আশুলিয়া, চারাবাগ, সাভার, ঢাকা</h2>
+<!-- Home Page -->
+<div class="home-container" id="homePage">
+  <h1>মেট্রো নিটিং এন্ড ডাইং মিলস ফ্যাক্টরি ২</h1>
+  <div class="factory-info">ঠিকানা: আশুলিয়া, চারাবাগ, সাভার, ঢাকা</div>
 
-    <div class="date-container">
-        <input type="date" id="selectedDate">
-        <button onclick="highlightShift()">OK</button>
-    </div>
+  <div>
+    <label>তারিখ নির্বাচন করুন: </label>
+    <input type="date" id="selectedDate">
+    <button onclick="updateShifts()">OK</button>
+  </div>
 
-    <table class="shift-table" id="shiftTable">
-        <thead>
-            <tr>
-                <th>ক্রমিক</th>
-                <th>Employee Name</th>
-                <!-- 22 দিনের ঘর -->
-                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
-                <th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th>
-                <th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th>
-                <th>19</th><th>20</th><th>21</th><th>22</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <!-- JS দিয়ে রো ভরানো হবে -->
-        </tbody>
-    </table>
+  <table id="shiftTable">
+    <thead>
+      <tr>
+        <th>ক্রমিক</th>
+        <th>নাম</th>
+        <!-- 1-30 কলাম -->
+        <script>
+          for(let i=1;i<=30;i++){
+            document.write("<th>"+i+"</th>");
+          }
+        </script>
+      </tr>
+    </thead>
+    <tbody id="shiftBody"></tbody>
+  </table>
+
+  <div class="summary" id="summary"></div>
 </div>
 
 <script>
-const password = "2025";
-
-// উদাহরণ: 5 জন এমপ্লয়ি, তোমার পুরো লিস্ট এখানে বসাবে
-const employees = [
-    {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-    {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-    {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-    {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-    {name:"মোঃ মোস্তফা", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]}
-];
-
-function checkPassword(){
-    const input = document.getElementById("passwordInput").value;
-    if(input === password){
-        document.getElementById("loginDiv").style.display="none";
-        document.getElementById("mainDiv").style.display="flex";
-        populateTable();
-    }else{
-        alert("পাসওয়ার্ড ভুল!");
+  // লগইন ফাংশন
+  function login(){
+    const pw = document.getElementById('passwordInput').value;
+    if(pw === "2025"){
+      document.getElementById('loginPage').classList.remove('active');
+      document.getElementById('homePage').classList.add('active');
+    } else {
+      document.getElementById('loginError').innerText = "পাসওয়ার্ড ভুল!";
     }
-}
+  }
 
-function populateTable(){
-    const tbody = document.getElementById("tableBody");
-    employees.forEach((emp,index)=>{
-        const tr = document.createElement("tr");
-        const snTd = document.createElement("td");
-        snTd.textContent = index+1;
-        tr.appendChild(snTd);
-
-        const nameTd = document.createElement("td");
-        nameTd.textContent = emp.name;
-        tr.appendChild(nameTd);
-
-        emp.shifts.forEach(shift=>{
-            const td = document.createElement("td");
-            td.textContent = shift;
-            tr.appendChild(td);
-        });
-
-        tbody.appendChild(tr);
-    });
-}
-
-function highlightShift(){
-    const dateInput = document.getElementById("selectedDate").value;
-    if(!dateInput) return alert("একটি তারিখ নির্বাচন করুন!");
-    const day = new Date(dateInput).getDate(); // 1-31
-    const tbody = document.getElementById("tableBody");
-    for(let tr of tbody.rows){
-        for(let i=2; i<=23; i++){ // 22 দিন
-            tr.cells[i].classList.remove("highlight");
-        }
-        if(day>=1 && day<=22){
-            tr.cells[day+1].classList.add("highlight");
-        }
-    }
-}
-</script>
-
-</body>
-</html>
+  // ৪৯ জনের নাম এবং শিফট ডাটা
+  const employees = [
+    {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ মোস্তফা", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মো বকুল", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ বাইজিদ হোসেন", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মো রায়হান মিয়া", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ শাহিন আলম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ আব্দুল খালেক", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মিঃ বাবুরাম চন্দ্র", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ মিনাল মোল্লা", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ জেনারুল ইসলাম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ রবিউল ইসলাম", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মিঃ কালাচাঁদ মালি", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ খশরুজ্জামান", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ রাসেল মিয়া", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ হাবিবুল্লাহ খান", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মোঃ রাজু ইসলাম", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ মিনহাজুল ইসলাম", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মোঃ তৈবুর রহমান", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ নাসিম হোসেন", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মো নাঈম হোসেন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ এমদাদুল হক", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"মিঃ রতন চন্দ্র বর্মন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ আল মামুন", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"মোঃ বদরুল আলম", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ রমজান আলী", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"সৈয়দ মিজানুর", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ মনজুরুল ইসলাম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মোঃ আমির আলী", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ কবির হোসেন", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মিঃ ভানুন সং বম", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ রেজাউল করিম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মোঃ আল আমিন", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মিঃ কুশল চন্দ্র", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"মোঃ মিজানুর রহমান", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মোঃ আনোয়ার হোসেন", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"মোঃ এনামুল হক", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মোঃ আজাদ", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"আব্দুল কাদের", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
+    {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]},
+    {name:"মোঃ মনিরুল ইসলাম", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
+    {

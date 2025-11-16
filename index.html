@@ -6,8 +6,7 @@
 <title>শিফট ও ছুটি টেবিল</title>
 <style>
   body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
-  .login-container, .home-container { display: none; padding: 20px; }
-  .login-container.active, .home-container.active { display: block; }
+  .home-container { padding: 20px; }
   h1 { color: green; text-align: center; }
   .factory-info { text-align: center; margin-bottom: 20px; }
   table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
@@ -51,17 +50,6 @@
 </div>
 
 <script>
-  // লগইন ফাংশন
-  function login(){
-    const pw = document.getElementById('passwordInput').value;
-    if(pw === "2025"){
-      document.getElementById('loginPage').classList.remove('active');
-      document.getElementById('homePage').classList.add('active');
-    } else {
-      document.getElementById('loginError').innerText = "পাসওয়ার্ড ভুল!";
-    }
-  }
-
   // ৪৯ জনের নাম এবং শিফট ডাটা
   const employees = [
     {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
@@ -107,4 +95,143 @@
     {name:"আব্দুল কাদের", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
     {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]},
     {name:"মোঃ মনিরুল ইসলাম", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
-    {
+    {name:"মিঃ ডন খুঁম বম", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]}
+  ];
+
+  // টেবিলে রেন্ডার
+  const shiftBody = document.getElementById("shiftBody");
+  employees.forEach((emp, index) => {
+    let row = "<tr><td>"+(index+1)+"</td><td>"+emp.name+"</td>";
+    emp.shifts.forEach(s => row += "<td>"+s+"</td>");
+    row += "</tr>";
+    shiftBody.innerHTML += row;
+  });
+
+  // নির্বাচিত তারিখ অনুযায়ী A/B/Off গণনা
+  function updateShifts(){
+    const dateInput = document.getElementById("selectedDate").value;
+    if(!dateInput){
+      alert("দয়া করে একটি তারিখ নির্বাচন করুন।");
+      return;
+    }
+    const selectedDay = new Date(dateInput).getDate(); // ১-৩০
+    let countA=0, countB=0, countOff=0;
+    employees.for<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শিফট ও ছুটি টেবিল</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
+  .home-container { padding: 20px; }
+  h1 { color: green; text-align: center; }
+  .factory-info { text-align: center; margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; font-size: 12px; }
+  th { background: #eee; }
+  input[type=date] { padding: 5px; }
+  button { padding: 5px 10px; }
+  .summary { margin-top: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<!-- Home Page -->
+<div class="home-container" id="homePage">
+  <h1>মেট্রো নিটিং এন্ড ডাইং মিলস ফ্যাক্টরি ২</h1>
+  <div class="factory-info">ঠিকানা: আশুলিয়া, চারাবাগ, সাভার, ঢাকা</div>
+
+  <div>
+    <label>তারিখ নির্বাচন করুন: </label>
+    <input type="date" id="selectedDate">
+    <button onclick="updateShifts()">OK</button>
+  </div>
+
+  <table id="shiftTable">
+    <thead>
+      <tr>
+        <th>ক্রমিক</th>
+        <th>নাম</th>
+        <!-- 1-30 কলাম -->
+        <script>
+          for(let i=1;i<=30;i++){
+            document.write("<th>"+i+"</th>");
+          }
+        </script>
+      </tr>
+    </thead>
+    <tbody id="shiftBody"></tbody>
+  </table>
+
+  <div class="summary" id="summary"></div>
+</div>
+
+<script>
+  // ৪৯ জনের নাম এবং শিফট ডাটা
+  const employees = [
+    {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ মোস্তফা", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মো বকুল", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ বাইজিদ হোসেন", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
+    {name:"মো রায়হান মিয়া", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
+    {name:"মোঃ শাহিন আলম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ আব্দুল খালেক", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মিঃ বাবুরাম চন্দ্র", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ মিনাল মোল্লা", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ জেনারুল ইসলাম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ রবিউল ইসলাম", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মিঃ কালাচাঁদ মালি", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
+    {name:"মোঃ খশরুজ্জামান", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
+    {name:"মোঃ রাসেল মিয়া", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ হাবিবুল্লাহ খান", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মোঃ রাজু ইসলাম", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ মিনহাজুল ইসলাম", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মোঃ তৈবুর রহমান", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
+    {name:"মোঃ নাসিম হোসেন", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
+    {name:"মো নাঈম হোসেন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ এমদাদুল হক", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"মিঃ রতন চন্দ্র বর্মন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ আল মামুন", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"মোঃ বদরুল আলম", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
+    {name:"মোঃ রমজান আলী", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
+    {name:"সৈয়দ মিজানুর", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ মনজুরুল ইসলাম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মোঃ আমির আলী", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ কবির হোসেন", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মিঃ ভানুন সং বম", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
+    {name:"মোঃ রেজাউল করিম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
+    {name:"মোঃ আল আমিন", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মিঃ কুশল চন্দ্র", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"মোঃ মিজানুর রহমান", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মোঃ আনোয়ার হোসেন", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"মোঃ এনামুল হক", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
+    {name:"মোঃ আজাদ", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
+    {name:"আব্দুল কাদের", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
+    {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]},
+    {name:"মোঃ মনিরুল ইসলাম", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
+    {name:"মিঃ ডন খুঁম বম", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B"]}
+  ];
+
+  // টেবিলে রেন্ডার
+  const shiftBody = document.getElementById("shiftBody");
+  employees.forEach((emp, index) => {
+    let row = "<tr><td>"+(index+1)+"</td><td>"+emp.name+"</td>";
+    emp.shifts.forEach(s => row += "<td>"+s+"</td>");
+    row += "</tr>";
+    shiftBody.innerHTML += row;
+  });
+
+  // নির্বাচিত তারিখ অনুযায়ী A/B/Off গণনা
+  function updateShifts(){
+    const dateInput = document.getElementById("selectedDate").value;
+    if(!dateInput){
+      alert("দয়া করে একটি তারিখ নির্বাচন করুন।");
+      return;
+    }
+    const selectedDay = new Date(dateInput).getDate(); // ১-৩০
+    let countA=0, countB=0, countOff=0;
+    employees.for

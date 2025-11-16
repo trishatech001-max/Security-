@@ -1,105 +1,419 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>শিফট তালিকা</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>মেট্রো নিটিং এন্ড ডাইং মিলস (ফ্যাক্টরি ২)</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 20px; }
-  h1 { color: green; text-align: center; }
-  .factory-info { text-align: center; margin-bottom: 20px; }
-  .picker { text-align: center; margin-bottom: 20px; }
-  .shift-container { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
-  .shift-box { background: #fff; padding: 15px; border-radius: 8px; width: 30%; min-height: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-  .shift-box h3 { text-align: center; margin-top: 0; color: #333; }
-  .shift-list { list-style: none; padding: 0; max-height: 500px; overflow-y: auto; }
-  .shift-list li { padding: 3px 0; }
+  :root{
+    --bg:#f4f7f5;
+    --card:#ffffff;
+    --accent:#1e7a3a;
+    --muted:#6b7280;
+    --glass: rgba(255,255,255,0.6);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;font-family: 'Segoe UI', Roboto, Arial, sans-serif}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#eef7ee 0%, #f4f7f5 100%);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:30px;
+    color:#0b2a17;
+  }
+  .container{
+    width:100%;
+    max-width:1100px;
+    margin:10px;
+    display:grid;
+    grid-template-columns: 420px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+
+  /* Header card */
+  .header{
+    grid-column: 1 / -1;
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow: 0 10px 30px rgba(18,70,34,0.06);
+    display:flex;
+    gap:20px;
+    align-items:center;
+    animation:fadeUp .45s ease both;
+  }
+  .brand{
+    flex:1;
+  }
+  .brand h1{
+    margin:0;font-size:20px;color:var(--accent);
+    letter-spacing:.2px;
+  }
+  .brand p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+
+  /* Left column: calendar card */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow: 0 8px 24px rgba(16,64,30,0.05);
+    animation:fadeUp .45s ease both;
+  }
+  .calendar-title{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+  }
+  .calendar-title h2{margin:0;font-size:16px;color:var(--accent)}
+  .calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    align-items:center;
+  }
+  .weekday{font-size:12px;color:var(--muted);text-align:center}
+  .day{
+    height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer; user-select:none;
+    transition:transform .12s ease, box-shadow .12s ease;
+    background:linear-gradient(180deg,#fff,#fbfffb);
+    box-shadow: 0 2px 6px rgba(12,50,20,0.03);
+    color:#083014;
+  }
+  .day:hover{transform:translateY(-4px)}
+  .day.disabled{opacity:.15;cursor:not-allowed;transform:none}
+  .day.selected{
+    background:linear-gradient(180deg,var(--accent), #2aa24a);
+    color:white;
+    box-shadow: 0 8px 24px rgba(33,112,58,0.18);
+  }
+
+  .actions{display:flex;gap:10px;align-items:center;margin-top:14px}
+  .btn{
+    padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
+    background:var(--accent);color:#fff;box-shadow: 0 6px 18px rgba(30,122,58,0.18);
+    position:relative; overflow:hidden;
+  }
+  .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(30,122,58,0.12); font-weight:700}
+  .btn:active{transform:scale(.995)}
+  /* ripple */
+  .ripple{
+    position:absolute;border-radius:50%;transform:scale(0);animation:ripple .6s linear;
+    background:rgba(255,255,255,0.4);
+  }
+  @keyframes ripple{to{transform:scale(4);opacity:0}}
+
+  /* Right column: tables */
+  .panels{display:grid;gap:14px}
+  .shift-card{
+    background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(10,30,20,0.04);
+    animation:fadeUp .45s ease both;
+  }
+  .shift-card h3{margin:0 0 8px 0;color:var(--accent)}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px 8px;text-align:left;border-bottom:1px dashed rgba(0,0,0,0.04)}
+  th{font-size:13px;color:var(--muted)}
+  .empty{color:var(--muted);padding:14px;text-align:center}
+
+  .row-actions{display:flex;gap:6px;justify-content:flex-end}
+  .icon-btn{border:none;background:transparent;cursor:pointer;font-weight:700;color:var(--accent)}
+  .small-input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+
+  /* mini form */
+  .add-row{display:flex;gap:8px;margin-top:10px}
+  .add-row .btn{padding:8px 12px;font-size:14px;border-radius:10px}
+
+  /* responsive */
+  @media (max-width:980px){
+    .container{grid-template-columns:1fr; padding:10px}
+  }
+
+  /* animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* little badge for selected date */
+  .selected-info{font-size:13px;color:var(--muted);margin-top:8px}
 </style>
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <h1>মেট্রো নিটিং এন্ড ডাইং মিলস (ফ্যাক্টরি ২)</h1>
+        <p>চারাবাগ, আশুলিয়া, সাভার, ঢাকা</p>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:12px;color:var(--muted)">ডেভেলপ — শিফট ম্যানেজার UI</div>
+      </div>
+    </div>
 
-<h1>মেট্রো নিটিং এন্ড ডাইং মিলস ফ্যাক্টরি ২</h1>
-<div class="factory-info">ঠিকানা: আশুলিয়া, চারাবাগ, সাভার, ঢাকা</div>
+    <!-- Left: Calendar -->
+    <div class="card" id="calendarCard" aria-label="December 2025 calendar">
+      <div class="calendar-title">
+        <h2>December 2025</h2>
+        <div style="font-size:13px;color:var(--muted)">শুধু ডিসেম্বর ২০২৫</div>
+      </div>
 
-<div class="picker">
-  <label>তারিখ নির্বাচন করুন (নভেম্বর ২০২৫): </label>
-  <input type="date" id="selectedDate" min="2025-11-01" max="2025-11-30">
-  <button onclick="showShifts()">OK</button>
-</div>
+      <div class="calendar-grid" id="calendar">
+        <!-- weekdays -->
+        <div class="weekday">Mon</div><div class="weekday">Tue</div><div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div><div class="weekday">Sat</div><div class="weekday">Sun</div>
+        <!-- days will be injected -->
+      </div>
 
-<div class="shift-container">
-  <div class="shift-box">
-    <h3>A শিফট</h3>
-    <ul id="shiftA" class="shift-list"></ul>
+      <div class="selected-info" id="selInfo">কোনও দিন সিলেক্ট করা নেই</div>
+
+      <div class="actions">
+        <button class="btn" id="okBtn">OK</button>
+        <button class="btn secondary" id="clearBtn">Clear</button>
+      </div>
+    </div>
+
+    <!-- Right: Shift tables -->
+    <div class="panels">
+      <div class="shift-card" id="aShiftCard">
+        <h3>A Shift</h3>
+        <div id="aShiftBody"></div>
+      </div>
+
+      <div class="shift-card" id="bShiftCard">
+        <h3>B Shift</h3>
+        <div id="bShiftBody"></div>
+      </div>
+
+      <div class="shift-card" id="offShiftCard">
+        <h3>Off Day</h3>
+        <div id="offShiftBody"></div>
+      </div>
+    </div>
   </div>
-  <div class="shift-box">
-    <h3>B শিফট</h3>
-    <ul id="shiftB" class="shift-list"></ul>
-  </div>
-  <div class="shift-box">
-    <h3>OFF</h3>
-    <ul id="shiftOFF" class="shift-list"></ul>
-  </div>
-</div>
 
 <script>
-// ৪৪ জনের নাম ও শিফট ডাটা
-const employees = [
-  {name:"মোঃ লিয়াকত আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-  {name:"মোঃ দেলোয়ার হোসেন", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-  {name:"মোঃ রাসেল আলী", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-  {name:"মোঃ সজিব আহমেদ", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-  {name:"মোঃ মোস্তফা", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-  {name:"মো বকুল", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-  {name:"মোঃ বাইজিদ হোসেন", shifts:["B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-  {name:"মো রায়হান মিয়া", shifts:["A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A"]},
-  {name:"মোঃ শাহিন আলম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-  {name:"মোঃ আব্দুল খালেক", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-  {name:"মিঃ বাবুরাম চন্দ্র", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-  {name:"মোঃ মিনাল মোল্লা", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-  {name:"মোঃ জেনারুল ইসলাম", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-  {name:"মোঃ রবিউল ইসলাম", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-  {name:"মিঃ কালাচাঁদ মালি", shifts:["OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B"]},
-  {name:"মোঃ খশরুজ্জামান", shifts:["OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A"]},
-  {name:"মোঃ রাসেল মিয়া", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
-  {name:"মোঃ হাবিবুল্লাহ খান", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
-  {name:"মোঃ রাজু ইসলাম", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
-  {name:"মোঃ মিনহাজুল ইসলাম", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
-  {name:"মোঃ তৈবুর রহমান", shifts:["A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF"]},
-  {name:"মোঃ নাসিম হোসেন", shifts:["B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF"]},
-  {name:"মো নাঈম হোসেন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
-  {name:"মোঃ এমদাদুল হক", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
-  {name:"মিঃ রতন চন্দ্র বর্মন", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
-  {name:"মোঃ আল মামুন", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
-  {name:"মোঃ বদরুল আলম", shifts:["A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A"]},
-  {name:"মোঃ রমজান আলী", shifts:["B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B"]},
-  {name:"সৈয়দ মিজানুর", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
-  {name:"মোঃ মনজুরুল ইসলাম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
-  {name:"মোঃ আমির আলী", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
-  {name:"মোঃ কবির হোসেন", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
-  {name:"মিঃ ভানুন সং বম", shifts:["A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A"]},
-  {name:"মোঃ রেজাউল করিম", shifts:["B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B"]},
-  {name:"মোঃ আল আমিন", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
-  {name:"মিঃ কুশল চন্দ্র", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
-  {name:"মোঃ মিজানুর রহমান", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
-  {name:"মোঃ আনোয়ার হোসেন", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
-  {name:"মোঃ এনামুল হক", shifts:["A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A"]},
-  {name:"মোঃ আজাদ", shifts:["B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]},
-  {name:"আব্দুল কাদের", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
-  {name:"আব্দুর রহমান", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B"]},
-  {name:"মোঃ মনিরুল ইসলাম", shifts:["A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A"]},
-  {name:"মিঃ ডন খুঁম বম", shifts:["B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B","B","B","OFF","A","A","A","A","A","A","OFF","B","B","B","B"]}
-];
+(function(){
+  // --- configuration & defaults ---
+  const month = 11; // JS months 0-based: 11 => December
+  const year = 2025;
+  const daysInMonth = new Date(year, month+1, 0).getDate(); // 31
+  const firstWeekday = new Date(year, month, 1).getDay(); // 0 Sun ... 6 Sat
+  // convert to Monday-first index (0 = Mon)
+  const firstIndex = (firstWeekday + 6) % 7;
 
-// শিফট দেখানোর ফাংশন
-function showShifts() {
-  const dateInput = document.getElementById("selectedDate").value;
-  if(!dateInput) { alert("একটি তারিখ নির্বাচন করুন"); return; }
+  // default sample names (used when no saved data)
+  const defaultData = {
+    a: ["রাহাত", "কামাল", "শরীফ"],
+    b: ["জসিম", "তরিক", "সোহেল"],
+    off: ["আলী", "বাচ্চু"]
+  };
 
-  const selected = new Date(dateInput);
-  const month = selected.getMonth() + 1; // 0-11
-  const year = selected.getFullYear();
-  const day = selected.getDate();
+  // utility date key -> YYYY-MM-DD
+  function dateKey(d){
+    const mm = String(12).padStart(2,'0'); // always 12
+    return `${year}-${mm}-${String(d).padStart(2,'0')}`;
+  }
 
-  if(month !== 11 || year !== 2025) {
-    alert("শিফট তথ্য শুধ
+  // DOM refs
+  const calendarEl = document.getElementById('calendar');
+  const selInfo = document.getElementById('selInfo');
+  const okBtn = document.getElementById('okBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const aBody = document.getElementById('aShiftBody');
+  const bBody = document.getElementById('bShiftBody');
+  const offBody = document.getElementById('offShiftBody');
+
+  let selectedDay = null;
+
+  // --- build calendar days (Monday-first) ---
+  function buildCalendar(){
+    // insert empty slots until firstIndex
+    for(let i=0;i<firstIndex;i++){
+      const slot = document.createElement('div');
+      slot.className = 'day disabled';
+      slot.innerHTML = '';
+      calendarEl.appendChild(slot);
+    }
+    for(let d=1; d<=daysInMonth; d++){
+      const dt = document.createElement('div');
+      dt.className = 'day';
+      dt.textContent = d;
+      dt.setAttribute('role','button');
+      dt.addEventListener('click', ()=> selectDay(d, dt));
+      calendarEl.appendChild(dt);
+    }
+    // fill trailing empty slots to complete row (optional)
+    const totalCells = firstIndex + daysInMonth;
+    const extra = (7 - (totalCells % 7)) % 7;
+    for(let i=0;i<extra;i++){
+      const slot = document.createElement('div');
+      slot.className = 'day disabled';
+      slot.innerHTML = '';
+      calendarEl.appendChild(slot);
+    }
+  }
+
+  function clearSelectedClass(){
+    document.querySelectorAll('.day.selected').forEach(el=>el.classList.remove('selected'));
+  }
+
+  function selectDay(d, el){
+    // deselect previous
+    clearSelectedClass();
+    selectedDay = d;
+    el.classList.add('selected');
+    selInfo.textContent = `সিলেক্ট করা: ${selectedDay} ডিসেম্বর ২০২৫`;
+  }
+
+  // --- data persistence ---
+  function loadDataForDay(d){
+    const key = 'shifts:' + dateKey(d);
+    const raw = localStorage.getItem(key);
+    if(raw){
+      try { return JSON.parse(raw); } catch(e){}
+    }
+    // return defaults copy
+    return {
+      a: defaultData.a.slice(),
+      b: defaultData.b.slice(),
+      off: defaultData.off.slice()
+    };
+  }
+  function saveDataForDay(d, data){
+    const key = 'shifts:' + dateKey(d);
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  // --- render tables ---
+  function renderList(container, list, type, day){
+    // container is div
+    container.innerHTML = '';
+    if(!list || list.length===0){
+      container.innerHTML = '<div class="empty">কোনও নাম নেই</div>' + addRowHTML(type);
+      attachAddHandler(container, type, day);
+      return;
+    }
+    // build table
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th style="width:70px">ক্র.নং</th><th>নাম</th><th style="width:120px;text-align:right">একশন</th></tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    list.forEach((name, idx)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${idx+1}</td><td>${escapeHtml(name)}</td><td style="text-align:right">
+        <div class="row-actions">
+          <button class="icon-btn" data-act="del" data-idx="${idx}" title="মুছুন">✕</button>
+        </div>
+      </td>`;
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+    container.insertAdjacentHTML('beforeend', addRowHTML(type));
+    attachRowActions(container, type, day);
+  }
+
+  function addRowHTML(type){
+    return `<div class="add-row">
+      <input class="small-input" placeholder="নাম লিখুন..." data-input="${type}" />
+      <button class="btn" data-add="${type}">Add</button>
+    </div>`;
+  }
+
+  function attachAddHandler(container, type, day){
+    const input = container.querySelector(`[data-input="${type}"]`);
+    const btn = container.querySelector(`[data-add="${type}"]`);
+    if(!btn) return;
+    btn.addEventListener('click', ()=>{
+      const val = (input.value||'').trim();
+      if(!val){ alert('নাম লিখুন'); input.focus(); return; }
+      const data = loadDataForDay(day);
+      data[type].push(val);
+      saveDataForDay(day, data);
+      renderSelectedDay(); // re-render all
+    });
+  }
+
+  function attachRowActions(container, type, day){
+    container.querySelectorAll('[data-act="del"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const idx = Number(btn.dataset.idx);
+        if(!confirm('মুছতে চান?')) return;
+        const data = loadDataForDay(day);
+        data[type].splice(idx,1);
+        saveDataForDay(day, data);
+        renderSelectedDay();
+      });
+    });
+    // add handler
+    attachAddHandler(container, type, day);
+  }
+
+  // escape HTML simple
+  function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+  // render all three based on selectedDay
+  function renderSelectedDay(){
+    if(!selectedDay) {
+      aBody.innerHTML = '<div class="empty">তারিখ সিলেক্ট করুন বাম দিক থেকে</div>';
+      bBody.innerHTML = '<div class="empty">তারিখ সিলেক্ট করুন বাম দিক থেকে</div>';
+      offBody.innerHTML = '<div class="empty">তারিখ সিলেক্ট করুন বাম দিক থেকে</div>';
+      return;
+    }
+    const data = loadDataForDay(selectedDay);
+    renderList(aBody, data.a, 'a', selectedDay);
+    renderList(bBody, data.b, 'b', selectedDay);
+    renderList(offBody, data.off, 'off', selectedDay);
+  }
+
+  // --- button handlers ---
+  okBtn.addEventListener('click', (e)=>{
+    createRipple(e);
+    if(!selectedDay){ alert('দয়া করে একটি দিন সিলেক্ট করুন'); return; }
+    // run "logic" — here we load (or init) shifts for the selected day and show them
+    const data = loadDataForDay(selectedDay);
+    // if no stored data, it's already initialised by loadDataForDay
+    saveDataForDay(selectedDay, data);
+    renderSelectedDay();
+    // nice little micro-feedback
+    okBtn.textContent = 'Loaded ✓';
+    setTimeout(()=> okBtn.textContent = 'OK', 900);
+  });
+
+  clearBtn.addEventListener('click', (e)=>{
+    createRipple(e);
+    if(!selectedDay){ alert('সাফ করার জন্য আগে দিন সিলেক্ট করুন'); return; }
+    if(!confirm('এই তারিখের সব তথ্য মুছে ফেলবেন?')) return;
+    const key = 'shifts:' + dateKey(selectedDay);
+    localStorage.removeItem(key);
+    renderSelectedDay();
+  });
+
+  // helper: ripple effect
+  function createRipple(ev){
+    const btn = ev.currentTarget;
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + 'px';
+    r.style.left = (ev.clientX - rect.left - size/2) + 'px';
+    r.style.top = (ev.clientY - rect.top - size/2) + 'px';
+    btn.appendChild(r);
+    setTimeout(()=> r.remove(), 600);
+  }
+
+  // initial build
+  buildCalendar();
+  renderSelectedDay();
+
+  // allow user to click day and press enter (keyboard)
+  calendarEl.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter' && ev.target && ev.target.classList.contains('day') && !ev.target.classList.contains('disabled')) {
+      ev.target.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>

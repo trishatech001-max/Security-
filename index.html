@@ -16,6 +16,8 @@
     #loginScreen input { padding: 10px; font-size: 16px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
     #loginScreen button { padding: 10px 20px; font-size: 16px; background: green; color: white; border: none; border-radius: 5px; cursor: pointer; }
     #loginScreen button:hover { background: darkgreen; }
+    .datePicker { margin: 10px 0; text-align: center; }
+    .datePicker input { padding: 5px; font-size: 16px; }
   </style>
 </head>
 <body><div id="loginScreen">
@@ -24,14 +26,17 @@
   <button onclick="checkPassword()">লগইন</button>
   <p id="loginMsg" style="color:red; margin-top:10px;"></p>
 </div><div class="container" id="mainContent" style="display:none;">
-  <h1>মেট্রো নিটিং এন্ড ড্রইং মিলস সিকিউরিটি সেকশন</h1>  <div class="section" id="generalShift">
+  <h1>মেট্রো নিটিং এন্ড ড্রইং মিলস সিকিউরিটি সেকশন</h1>  <div class="datePicker">
+    <label for="selectedDate">তারিখ নির্বাচন করুন: </label>
+    <input type="date" id="selectedDate" onchange="updateOffDays()">
+  </div>  <div class="section" id="generalShift">
     <h2>General Shift</h2>
     <div class="names" id="generalNames">
       <p>জনাব A</p>
       <p>জনাব B</p>
       <p>জনাব C</p>
     </div>
-    <div class="off-day" id="generalOff">Off Day: শুক্রবার</div>
+    <div class="off-day" id="generalOff"></div>
   </div>  <div class="section" id="aShift">
     <h2>A Shift (সকাল ৬ → সন্ধ্যা ৬)</h2>
     <div class="names" id="aNames">
@@ -54,9 +59,29 @@
     if(input === '25') {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
+      updateOffDays();
     } else {
       loginMsg.textContent = 'আবার চেষ্টা করুন';
       document.getElementById('passwordInput').value = '';
+    }
+  }
+
+  function updateOffDays() {
+    const dateInput = document.getElementById('selectedDate').value;
+    const generalOff = document.getElementById('generalOff');
+
+    if(!dateInput) {
+      generalOff.textContent = '';
+      return;
+    }
+
+    const selectedDate = new Date(dateInput);
+    const day = selectedDate.getDay(); // 5 = Friday
+
+    if(day === 5) {
+      generalOff.textContent = 'আজ General Shift এর Off Day';
+    } else {
+      generalOff.textContent = 'General Shift চলবে রাত ৮টা পর্যন্ত';
     }
   }
 </script></body>

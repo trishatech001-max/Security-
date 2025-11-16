@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>মেট্রো নিটিং এন্ড ড্রইং মিলস সিকিউরিটি সেকশন</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f0f0; }
+    .container { max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: green; }
+    .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    .section h2 { margin-top: 0; color: #333; }
+    .names { margin-top: 10px; }
+    .names p { margin: 5px 0; }
+    .off-day { margin-top: 10px; color: red; font-weight: bold; }
+    #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #e0ffe0; }
+    #loginScreen input { padding: 10px; font-size: 16px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    #loginScreen button { padding: 10px 20px; font-size: 16px; background: green; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    #loginScreen button:hover { background: darkgreen; }
+  </style>
+</head>
+<body><div id="loginScreen">
+  <h2>লগইন করতে পাসওয়ার্ড দিন</h2>
+  <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড">
+  <button onclick="checkPassword()">লগইন</button>
+  <p id="loginMsg" style="color:red; margin-top:10px;"></p>
+</div><div class="container" id="mainContent" style="display:none;">
+  <h1>মেট্রো নিটিং এন্ড ড্রইং মিলস সিকিউরিটি সেকশন</h1>  <div class="section" id="generalShift">
+    <h2>General Shift</h2>
+    <div class="names" id="generalNames">
+      <p>জনাব A</p>
+      <p>জনাব B</p>
+      <p>জনাব C</p>
+    </div>
+    <div class="off-day" id="generalOff">Off Day: শুক্রবার</div>
+  </div>  <div class="section" id="aShift">
+    <h2>A Shift (সকাল ৬ → সন্ধ্যা ৬)</h2>
+    <div class="names" id="aNames">
+      <p>জনাব D</p>
+      <p>জনাব E</p>
+    </div>
+    <div class="off-day" id="aOff">Off Day: (পরবর্তীতে নির্ধারণ)</div>
+  </div>  <div class="section" id="bShift">
+    <h2>B Shift (সন্ধ্যা ৬ → সকাল ৬)</h2>
+    <div class="names" id="bNames">
+      <p>জনাব F</p>
+      <p>জনাব G</p>
+    </div>
+    <div class="off-day" id="bOff">Off Day: (পরবর্তীতে নির্ধারণ)</div>
+  </div>
+</div><script>
+  function checkPassword() {
+    const input = document.getElementById('passwordInput').value;
+    const loginMsg = document.getElementById('loginMsg');
+    if(input === '25') {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    } else {
+      loginMsg.textContent = 'আবার চেষ্টা করুন';
+      document.getElementById('passwordInput').value = '';
+    }
+  }
+</script></body>
+</html>
